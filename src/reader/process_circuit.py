@@ -76,6 +76,8 @@ def build_command_gnark(payload, count):
 
         # Join the commands into a single string
         pre_command = "".join(commands + commands_memory + commands_merge)
+
+        print(pre_command)
         
         command = f"cd {helper.Paths().GNARK_DIR}; \
                     {command_binary} \

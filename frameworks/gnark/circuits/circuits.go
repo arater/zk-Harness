@@ -3,6 +3,7 @@ package circuits
 import (
 	"encoding/hex"
 	"fmt"
+	"math/big"
 	"strconv"
 
 	"github.com/consensys/gnark-crypto/ecc"
@@ -16,6 +17,7 @@ import (
 	"github.com/zkCollective/zk-Harness/frameworks/gnark/circuits/groth16bls24315verifier"
 	"github.com/zkCollective/zk-Harness/frameworks/gnark/circuits/prf/mimc"
 	"github.com/zkCollective/zk-Harness/frameworks/gnark/circuits/prf/sha2"
+	"github.com/zkCollective/zk-Harness/frameworks/gnark/circuits/regex"
 	"github.com/zkCollective/zk-Harness/frameworks/gnark/circuits/toy/cubic"
 	emulate "github.com/zkCollective/zk-Harness/frameworks/gnark/circuits/toy/emulate"
 	"github.com/zkCollective/zk-Harness/frameworks/gnark/circuits/toy/exponentiate"
@@ -50,6 +52,9 @@ func init() {
 	// Recursion
 	BenchCircuits["groth16_bls12377"] = &defaultCircuit{}
 	BenchCircuits["groth16_bls24315"] = &defaultCircuit{}
+
+	// Regex
+	BenchCircuits["regex"] = &defaultCircuit{}
 }
 
 type defaultCircuit struct {
@@ -113,6 +118,8 @@ func (d *defaultCircuit) Circuit(size int, name string, opts ...CircuitOption) f
 		outerCircuit := groth16bls24315verifier.VerifierCircuit{}
 		outerCircuit.InnerVk.Allocate(optCircuit.verifyingKey)
 		return &outerCircuit
+	case "regex":
+		return &regex.RegexCircuit{}
 	default:
 		panic("not implemented")
 	}
@@ -197,6 +204,32 @@ func (d *defaultCircuit) Witness(size int, curveID ecc.ID, name string, opts ...
 			panic(err)
 		}
 		return w
+	case "regex":
+		const (
+			stringLength    = 7
+			flattenedStates = 5
+			statesLength    = 5
+			totalChar       = 6
+		)
+		regexCircuit := regex.RegexCircuit{}
+		for i := range regexCircuit.Queries {
+			regexCircuit.Queries[i] = i
+		}
+		privateString := make([]*big.Int, stringLength)
+		inputString := "virenet"
+		// inputString := (data["InputString"].(string))
+		for i, char := range inputString {
+			if i < stringLength {
+				privateString[i] = big.NewInt(int64(char))
+				regexCircuit.PrivateString[i] = privateString[i]
+			}
+		}
+
+		w, err := frontend.NewWitness(&regexCircuit, curveID.ScalarField())
+		if err != nil {
+			panic(err)
+		}
+		return w
 	case "sha2":
 		input := (data["PreImage"].(string))
 		output := (data["Hash"].(string))
@@ -208,7 +241,7 @@ func (d *defaultCircuit) Witness(size int, curveID ecc.ID, name string, opts ...
 		witness := sha2.Sha2Circuit{
 			In: uints.NewU8Array(bts),
 		}
-		
+
 		copy(witness.Expected[:], uints.NewU8Array(dgst[:]))
 		w, err := frontend.NewWitness(&witness, curveID.ScalarField())
 		if err != nil {
@@ -247,8 +280,6 @@ type CircuitConfig struct {
 	inputPath    string
 	verifyingKey groth16.VerifyingKey
 }
-
-
 
 func WithInputCircuit(inputPath string) CircuitOption {
 	return func(opt *CircuitConfig) error {
