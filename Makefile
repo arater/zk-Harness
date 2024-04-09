@@ -222,6 +222,12 @@ benchmark-sha-circom: init circom-init log-init
 	$(info --------------------------------------------)
 	python3 -m $(FRAMEWORK).reader --config $(INPUTS)/config/circom/config_sha.json --machine $(MACHINE) 2>&1 | tee -a .logs/circom.log
 
+benchmark-regex-circom-circuits: init circom-init log-init
+	$(info --------------------------------------------)
+	$(info -------- CIRCOM CIRCUIT BENCHMARKS ---------)
+	$(info --------------------------------------------)
+	python3 -m $(FRAMEWORK).reader --config $(INPUTS)/config/circom/config_regex.json --machine $(MACHINE) 2>&1 | tee -a .logs/circom.log
+
 benchmark-circom-circuits: init circom-init log-init
 	$(info --------------------------------------------)
 	$(info -------- CIRCOM CIRCUIT BENCHMARKS ---------)
@@ -239,6 +245,12 @@ benchmark-gnark-regex-circuit: gnark-init log-init
 	$(info ------ GNARK TEST CIRCUIT BENCHMARKS -------)
 	$(info --------------------------------------------)
 	python3 -m $(FRAMEWORK).reader --config $(INPUTS)/config/gnark/config_regex.json --machine $(MACHINE) 2>&1 | tee -a .logs/gnark.log
+
+benchmark-gnark-nfaregex-circuit: gnark-init log-init
+	$(info --------------------------------------------)
+	$(info ------ GNARK TEST CIRCUIT BENCHMARKS -------)
+	$(info --------------------------------------------)
+	python3 -m $(FRAMEWORK).reader --config $(INPUTS)/config/gnark/config_nfaregex.json --machine $(MACHINE) 2>&1 | tee -a .logs/gnark.log
 
 benchmark-gnark--sha256-test-circuit: gnark-init log-init
 	$(info --------------------------------------------)

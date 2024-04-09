@@ -1,8 +1,8 @@
 {
-    "project": "circom/snarkjs",
+    "project": "circom/rapidsnark",
     "project_url": "https://github.com/iden3/circom",
     "category": "circuit",
-    "count": 10,
+    "count": 1,
     "payload": {
         "backend": [
             "groth16"
@@ -11,19 +11,14 @@
             "bn128"
         ], 
         "circuits": {
-            "exponentiate": {
-                "input_path": [
-                    "input/circuit/exponentiate/input_10.json"
-                ],
+            "regex": {
+                "input_path": "input/circuit/regex",
                 "template_vars": ["E"]
             }
         },
         "algorithm": [
             "compile",
-            "setup",
-            "witness",
-            "prove",
-            "verify"
+            "setup"
         ]
     }    
 }

@@ -16,4 +16,4 @@ template Exponentiate(E) {
     out === Y;
 }
 
-component main {public [X, Y]} = Exponentiate({TEMPLATE_VARS});
+component main {public [X, Y]} = Exponentiate(10000000);

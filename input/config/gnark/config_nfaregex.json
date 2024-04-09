@@ -5,7 +5,7 @@
     "count": 10,
     "payload": {
         "backend": [
-            "groth16"
+            "plonk"
         ],
         "curves": [
             "bn254",
